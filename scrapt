@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Feb 18 22:49:39 2019
+
+@author: jax
+"""
+# Note <a  > <body > means tags, we can use .a or findALL("a") to obtain
+# For things like " title = fafds ", use contain[title] to obtain inside information
+
+
+
+from bs4 import BeautifulSoup as soup
+from urllib.request import urlopen
+
+my_url = 'http://mlb.mlb.com/mlb/official_info/umpires/roster.jsp'
+uClient = urlopen(my_url)
+
+page_html = uClient.read()
+uClient.close()
+
+page_soup = soup(page_html,"html.parser")
+second_page = page_soup.find('div',{'class':'column first'}) 
+second_url = second_page.findAll('a')
+
+for line in second_url:
+    
+    url = 'http://mlb.mlb.com'+line['href']
+    umpire = urlopen(url)
+
+    umpire_html = umpire.read()
+    umpire.close()
+
+    umpire_soup = soup(umpire_html,"html.parser")
+
+    message = umpire_soup.find("div",{"id":"mc"})
+    name = message.img['alt']
+    experience = message.findAll('p')
+
+    serve_time = experience[0].text
+    year = serve_time.split()[4]
+    career = experience[1].text
+    personal = experience[2].text
+    
+    
+
+#for container in containers:
+#    brand = container.img["title"]
+#    
+#    title_container = container.findAll("a",{"class":"item-title"})
+    #f.write(brand + ",")
+''' single '''
+#my_url = 'http://mlb.mlb.com/mlb/official_info/umpires/bio.jsp?id=3055'
+#uClient = urlopen(my_url)
+#
+#page_html = uClient.read()
+#uClient.close()
+#
+#page_soup = soup(page_html,"html.parser")
+#
+#
+## output
+##filename = "product.csv"
+##f = open(filename,"w")
+##
+##headers = "brand, product_name,shipping\n"
+##f.write(headers)
+#message = page_soup.find("div",{"id":"mc"})
+#name = message.img['alt']
+#experience = message.findAll('p')
+#
+#serve_time = experience[0].text
+#year = serve_time.split()[4]
+#career = experience[1].text
+#personal = experience[2].text
