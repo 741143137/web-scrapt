@@ -12,6 +12,7 @@ Created on Mon Feb 18 22:49:39 2019
 
 from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen
+import re
 
 my_url = 'http://mlb.mlb.com/mlb/official_info/umpires/roster.jsp'
 uClient = urlopen(my_url)
@@ -22,6 +23,7 @@ uClient.close()
 page_soup = soup(page_html,"html.parser")
 second_page = page_soup.find('div',{'class':'column first'}) 
 second_url = second_page.findAll('a')
+Text = {}
 
 for line in second_url:
     
@@ -34,13 +36,25 @@ for line in second_url:
     umpire_soup = soup(umpire_html,"html.parser")
 
     message = umpire_soup.find("div",{"id":"mc"})
-    name = message.img['alt']
-    experience = message.findAll('p')
-
-    serve_time = experience[0].text
-    year = serve_time.split()[4]
-    career = experience[1].text
-    personal = experience[2].text
+    
+    #name = message.img['alt']
+    words = message.text.split()
+    name = words[1]+' ' + words[2]
+    Text[name] = message.text
+    myText = message.text
+    serve_year = re.findall('MAJOR LEAGUE SERVICE TIME: ([0-9.]+)',myText)
+    
+    begin= myText.find('Born')
+    born_year = myText[begin+2] 
+    
+    for lines in message.text:
+        print(lines)
+#    experience = message.findAll('strong')
+#
+#    serve_time = experience[0].text
+#    year = serve_time.split()[4]
+#    career = experience[1].text
+#    personal = experience[2].text
     
     
 
